@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      width: 100%;
+    }
+    td {
+      text-align: left;
+    }
+    .pvipham{
+        background-color: #ffdddd;
+    }
+    .vipham {
+      background-color: #ffdddd;
+      border-left: 3px solid #f44336;
+      border-radius : 3px 5px 5px 3px;
+    }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <meta charset="utf-8">
+</head>
+<body style=>
+      <div class="container d-flex flex-column flex-md-row justify-content-between">
+        <form class="form-inline" action="/result" method="post"  >
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="URL" id="name" name="name" style="float:left;" />
+                <button  class="btn btn-primary " id="idbtn" type="submit">Submit</button>
+            </div>
+        </form>
+      </div>
+      </br>
+<main class="container" style="background: #fffff9">
+    <h2 id="url"></h2>
+    <div id="texts"></div>
+    <!--<h2>Images:</h2>-->
+    <!--<div class="row" id="target"></div>-->
+</main>
+<script>
+
+let data = JSON.parse({{data|tojson}});
+console.log(data)
+document.getElementById("url").textContent = String(data.url);
+
+if (data != ''){
+<!--    data.images.forEach( function(obj) {-->
+<!--        var img = new Image();-->
+<!--        img.src = String(obj);-->
+<!--        img.setAttribute("width", "250px");-->
+<!--        document.getElementById("target").appendChild(img);-->
+<!--    });-->
+    data.texts.forEach( function(obj) {
+        var td1 = document.createElement("p");
+        var node1 = document.createTextNode(String(obj.text));
+        if (obj.vipham){
+            td1.setAttribute("class", "pvipham")
+        }else{ var node2 = document.createTextNode('');}
+        td1.appendChild(node1);
+        document.getElementById("texts").appendChild(td1);
+    });
+
+}
+</script>
+</body>
+</html>
