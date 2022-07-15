@@ -1,5 +1,7 @@
 ﻿from flask import Flask, request, render_template
-from utils import get_data, data_collection, openbrowser
+
+from setting import HOST, PORT, DEBUG
+from utils import get_data, data_collection, openbrowser, openChrome
 from bson.json_util import dumps
 
 app = Flask(__name__)
@@ -22,5 +24,5 @@ def response():
 
 
 if __name__ == '__main__':
-    driver = openbrowser()
-    app.run()
+    driver = openChrome()
+    app.run(HOST, PORT, DEBUG)
