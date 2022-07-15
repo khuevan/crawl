@@ -1,13 +1,13 @@
 ﻿from flask import Flask, request, render_template
 
 from settings import HOST, PORT, DEBUG
-from utils import get_data, data_collection, openbrowser, openChrome
+from utils import get_data, data_collection, openbrowser, openchrome
 from bson.json_util import dumps
 
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def welcome():
     return render_template('index.html')
 
@@ -24,5 +24,5 @@ def response():
 
 
 if __name__ == '__main__':
-    driver = openChrome()
+    driver = openbrowser()
     app.run(HOST, PORT, DEBUG)

@@ -60,7 +60,7 @@ def openbrowser():
     return driver
 
 
-def openChrome():
+def openchrome():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
@@ -100,7 +100,9 @@ def gettexthtml(html):
 
 
 def crawl_data(driver, url):
-    """Get all text and image form url
+    """
+    Get all text and image form url
+
     :param driver: webdriver
     :param url: url
     :return: A dict contain url, list image, list text
@@ -137,7 +139,9 @@ def crawl_data(driver, url):
 
 
 def check_keyword(text, keyword: list):
-    """Check if text contain keyword
+    """
+    Check if text contain keyword
+
     :param keyword: A list of keyword [ [key1, key3], [key2, key3] ]
     :param text: A sentence
     :return: True False
@@ -169,14 +173,16 @@ def get_data(url, driver):
 
 
 def saveimage(images: list, path):
-    """Save image file with TimeStamp as file name
+    """
+    Save image file with TimeStamp as file name
+
     :param images: list url f image
     :param path: place to save
     :return: list path to images
     """
     listimages = []
     for image in images:
-        dt = datetime.now
+        dt = datetime.now()
         ts = datetime.timestamp(dt)
         name = '/' + str(ts) + image.split('.')[-1]
         urllib.request.urlretrieve(image, name)
@@ -189,5 +195,4 @@ def saveimage(images: list, path):
 #     for data in url_collection.find():
 #         for url in data['urls']:
 #             get_data(url)
-
 
