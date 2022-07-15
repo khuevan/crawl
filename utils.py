@@ -6,6 +6,8 @@ import markdown
 import validators
 from bs4 import BeautifulSoup
 
+from setting import CHROME_PATH
+
 from googlesearch import search
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -54,6 +56,15 @@ def openbrowser():
     # options.add_argument('window-size=0x0')
     options.add_argument('ignore-certificate-errors')
     driver = webdriver.Edge(options=options)
+    return driver
+
+
+def openChrome():
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome(executable_path=CHROME_PATH, chrome_options=chrome_options)
     return driver
 
 
