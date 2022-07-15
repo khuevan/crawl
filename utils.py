@@ -1,4 +1,6 @@
 import time
+import urllib.request
+from datetime import datetime
 
 import html2text
 
@@ -49,12 +51,42 @@ def searchurls():
 
 def openbrowser():
     options = webdriver.EdgeOptions()
-    # options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors"])
-    # options.add_argument('headless')
-    # options.add_argument('window-size=0x0')
+    options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors"])
+    options.add_argument('headless')
+    options.add_argument('window-size=0x0')
     options.add_argument('ignore-certificate-errors')
     driver = webdriver.Edge(options=options)
     return driver
+
+
+def get_image(images, backgoundimg=None):
+    imgs = []
+    for el in backgoundimg or []:
+        try:
+            image = el.value_of_css_property("background-image")[5:-2]
+            if image != 'none':
+                if validators.url(image):
+                    imgs.append(image)
+        except:pass
+    for image in images or []:
+        try:
+            if image.get_attribute('src') is not None:
+                src = image.get_attribute('src')
+                imgs.append(src)
+        except:pass
+    return imgs
+
+
+def gettexthtml(html):
+    texts = []
+    text = html2text.html2text(html, bodywidth=0)
+    html = markdown.markdown(text)
+    text = "".join(BeautifulSoup(html, "html.parser").findAll(text=True))
+    for t in text.split("\n"):
+        for x in t.split('. '):
+            if len(x.split(' ')) > 5:
+                texts.append(x)
+    return texts
 
 
 def crawl_data(driver, url):
@@ -68,50 +100,36 @@ def crawl_data(driver, url):
                 'texts': [...]
             }
     """
-    if validators.url:
+    if validators.url(url):
         driver.get(url)
         time.sleep(2)
 
         images = driver.find_elements(By.TAG_NAME, 'img')
         div = driver.find_elements(By.TAG_NAME, 'div')
         html = driver.page_source
-        text = html2text.html2text(html, bodywidth=0)
-        html = markdown.markdown(text)
-        text = "".join(BeautifulSoup(html, "html.parser").findAll(text=True))
-        texts = []
-        for t in text.split("\n"):
-                for x in t.split('. '):
-                    if len(x.split(' ')) > 5:
-                        texts.append(x)
-        imgs = []
-        for el in div:
-            try:
-                image = el.value_of_css_property("background-image")[5:-2]
-                if image != 'none':
-                    if validators.url(image):
-                        imgs.append(image)
-            except:
-                pass
 
-        for image in images:
-            try:
-                if image.get_attribute('src') is not None:
-                    src = image.get_attribute('src')
-                    imgs.append(src)
-            except:pass
+        try:
+            imgs = get_image(images, div)
+        except:
+            imgs = []
+        try:
+            texts = gettexthtml(html)
+        except:
+            texts = []
 
         data = {
                 "url": url,
                 "images": imgs,
                 "texts": texts
             }
+
         return data
 
 
-def check_keyword(text, keyword):
+def check_keyword(text, keyword: list):
     """Check if text contain keyword
+    :param keyword: A list of keyword [ [key1, key3], [key2, key3] ]
     :param text: A sentence
-    :param listkeyword: A list of keyword [ [key1, key3], [key2, key3] ]
     :return: True False
     """
     keys = []
@@ -129,12 +147,31 @@ def get_data(url, driver):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
+        path = 'static/image'
+        images = [image for image in saveimage(data['images'], path)]
         text_checked = [{'text': text, 'vipham': check_keyword(text, keywords)}for text in data['texts']]
         data.update({"texts": text_checked})
+        data.update({"images": images})
         data_collection.insert_one(data)
         return data
     else:
         return data
+
+
+def saveimage(images: list, path):
+    """Save image file with TimeStamp as file name
+    :param images: list url f image
+    :param path: place to save
+    :return: list path to images
+    """
+    listimages = []
+    for image in images:
+        dt = datetime.now
+        ts = datetime.timestamp(dt)
+        name = '/' + str(ts) + image.split('.')[-1]
+        urllib.request.urlretrieve(image, name)
+        listimages.append(path + name)
+    return listimages
 
 
 # if __name__ == '__main__':
