@@ -1,5 +1,4 @@
 import time
-import urllib.request
 
 import html2text
 
@@ -8,10 +7,11 @@ import validators
 from bs4 import BeautifulSoup
 
 from googlesearch import search
-from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pymongo
+
+from keywords import keywords
 
 client = pymongo.MongoClient("mongodb://localhost:27017")
 db = client['crawlbykeyword']
@@ -49,9 +49,9 @@ def searchurls():
 
 def openbrowser():
     options = webdriver.EdgeOptions()
-    options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors"])
-    options.add_argument('headless')
-    options.add_argument('window-size=0x0')
+    # options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors"])
+    # options.add_argument('headless')
+    # options.add_argument('window-size=0x0')
     options.add_argument('ignore-certificate-errors')
     driver = webdriver.Edge(options=options)
     return driver
@@ -70,7 +70,7 @@ def crawl_data(driver, url):
     """
     if validators.url:
         driver.get(url)
-        time.sleep(3)
+        time.sleep(2)
 
         images = driver.find_elements(By.TAG_NAME, 'img')
         div = driver.find_elements(By.TAG_NAME, 'div')
@@ -125,11 +125,11 @@ def check_keyword(text, keyword):
         return True
 
     
-def get_data(url):
+def get_data(url, driver):
     data = data_collection.find_one({'url': url})
     if data is None:
-        data = crawl_data(openbrowser(), url)
-        text_checked = [{'text': text, 'vipham': check_keyword(text, get_keyword())}for text in data['texts']]
+        data = crawl_data(driver, url)
+        text_checked = [{'text': text, 'vipham': check_keyword(text, keywords)}for text in data['texts']]
         data.update({"texts": text_checked})
         data_collection.insert_one(data)
         return data

@@ -1,5 +1,5 @@
 ﻿from flask import Flask, request, render_template
-from utils import *
+from utils import get_data, data_collection, openbrowser
 from bson.json_util import dumps
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ def welcome():
 def response():
     if request.method == 'POST':
         url = request.form['name']
-        data = get_data(url)
+        data = get_data(url, driver)
         return render_template('result.html', url=url, data=dumps(data))
     else:
         data = data_collection.find()
@@ -22,4 +22,5 @@ def response():
 
 
 if __name__ == '__main__':
+    driver = openbrowser()
     app.run()
