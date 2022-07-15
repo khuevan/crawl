@@ -13,7 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pymongo
 
-from setting import CHROME_PATH
+from settings import CHROME_PATH
 from keywords import keywords
 
 client = pymongo.MongoClient("mongodb://localhost:27017")
