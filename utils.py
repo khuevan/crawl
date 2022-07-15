@@ -1,4 +1,4 @@
-﻿import time
+import time
 import urllib.request
 
 import html2text
@@ -45,9 +45,6 @@ def searchurls():
                 "intent": intent['intent'],
                 "urls": liststrurl
             })
-
-
-def 
 
 
 def openbrowser():
@@ -149,6 +146,10 @@ def get_data(url):
         return data
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+#     searchurls()
+#     for data in url_collection.find():
+#         for url in data['urls']:
+#             get_data(url)
 
 
