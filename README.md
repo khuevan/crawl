@@ -25,6 +25,16 @@ Hàm `crawl()` truyền vào *url* và lấy tất cả *text* và *image* từ 
 
 ```python
 def crawl(driver, url):
+    """Get all text and image form url
+    :param driver: webdriver
+    :param url: url
+    :return: A dict contain url, list image, list text
+            {
+                'url': url
+                'images': [...]
+                'texts': [...]
+            }
+    """
     if validators.url:
         driver.get(url)
         time.sleep(3)
@@ -56,7 +66,7 @@ def crawl(driver, url):
                     src = image.get_attribute('src')
                     imgs.append(src)
             except:pass
-				data = {
+	data = {
                 "url": url,
                 "images": imgs,
                 "texts": texts
@@ -67,6 +77,11 @@ Hàm `check_keyword()` kiểm tra trong câu có chứa keyword không.
 
 ```python
 def check_keyword(text, keyword):
+    """Check if text contain keyword
+    :param text: A sentence
+    :param listkeyword: A list of keyword [ [key1, key3], [key2, key3] ]
+    :return: True False
+    """
     keys = []
     for item in keyword:
         a = [key for key in item if key.lower() in text.lower()]
@@ -78,7 +93,7 @@ def check_keyword(text, keyword):
         return True
 ```
 
-`get_data` lấy dữ liệu trả về dữ liệu theo url
+`get_data()` lấy dữ liệu trả về dữ liệu theo url
 
 ```python
 def get_data(url):
