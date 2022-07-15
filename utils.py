@@ -109,6 +109,11 @@ def crawl_data(driver, url):
 
 
 def check_keyword(text, keyword):
+    """Check if text contain keyword
+    :param text: A sentence
+    :param listkeyword: A list of keyword [ [key1, key3], [key2, key3] ]
+    :return: True False
+    """
     keys = []
     for item in keyword:
         a = [key for key in item if key.lower() in text.lower()]
@@ -119,21 +124,7 @@ def check_keyword(text, keyword):
     else:
         return True
 
-
-def check(texts, keywords):
-    keys = []
-    for text in texts.split('.'):
-        for item in keywords:
-            for key in item['keyword']:
-                a = [x for x in key if x.lower() in text.lower()]
-                if a == key:
-                    keys.append(a)
-    if not keys:
-        return False
-    else:
-        return True
-
-
+    
 def get_data(url):
     data = data_collection.find_one({'url': url})
     if data is None:
