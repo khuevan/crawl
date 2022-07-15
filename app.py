@@ -1,6 +1,6 @@
 ﻿from flask import Flask, request, render_template
 
-from setting import HOST, PORT, DEBUG
+from settings import HOST, PORT, DEBUG
 from utils import get_data, data_collection, openbrowser
 from bson.json_util import dumps
 

@@ -6,7 +6,7 @@ import markdown
 import validators
 from bs4 import BeautifulSoup
 
-from setting import CHROME_PATH
+from settings import CHROME_PATH
 
 from googlesearch import search
 from selenium import webdriver
