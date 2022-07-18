@@ -23,6 +23,29 @@ def response():
         data = data_collection.find()
         return dumps(data)
 
+@app.route('/check', methods=['GET', 'POST'])
+def check():
+    if request.method == 'POST':
+        req = request.json
+        type = req['type']
+        if type == 'url':
+            try:
+                texts = get_data(driver, req['data'])
+                text = [txt['text'] for txt in texts['texts']]
+                data = {
+                    "status": "success",
+                    "vipham": check_keyword(text, keywords)
+                }
+            except:
+                data = {
+                    "status": "fail",
+                    "msg": "Error"
+                }
+            return Response(dumps(data), mimetype='json')
+        else:
+            return Response(dumps({"vipham": check_keyword([req['data']], keywords)}), mimetype='json')
+
+
 
 @app.route('/check', methods=['GET', 'POST'])
 def check():

@@ -15,7 +15,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pymongo
 
-from settings import CHROME_PATH, MONGODB_CONNSTRING
+from settings import CHROME_PATH
 from keywords import keywords
 
 client = pymongo.MongoClient("mongodb://localhost:27017")
