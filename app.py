@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, Response
 from keywords import keywords
 from settings import HOST, PORT, DEBUG
-from utils import get_data, data_collection, check_keyword, openchrome
+from utils import get_data, data_collection, check_keyword, openbrowser
 
 from bson.json_util import dumps
 
@@ -17,38 +17,49 @@ def welcome():
 def response():
     if request.method == 'POST':
         url = request.form['name']
-        data = get_data(url, driver)
+        data = get_data(driver, url)
         return render_template('result.html', url=url, data=dumps(data))
     else:
         data = data_collection.find()
         return dumps(data)
 
 
-@app.route('/check', methods=['GET', 'POST'])
-def check():
-    if request.method == 'POST':
+@app.route('/check_url', methods=['POST'])
+def check_url():
+    try:
         req = request.json
-        type = req['type']
-        if type == 'url':
-            try:
-                texts = get_data(driver, req['data'])
-                text = [txt['text'] for txt in texts['texts']]
-                data = {
-                    "status": "success",
-                    "vipham": check_keyword(text, keywords)
-                }
-            except:
-                data = {
-                    "status": "fail",
-                    "msg": "Error"
-                }
-            return Response(dumps(data), mimetype='json')
-        else:
-            return Response(dumps({"vipham": check_keyword([req['data']], keywords)}), mimetype='json')
+        url = req['url']
+        texts = get_data(driver, url)
+        text = [txt['text'] for txt in texts['texts']]
+        data = {
+            "successfull": True,
+            "vipham": check_keyword(text, keywords)
+        }
+    except Exception as e:
+        data = {
+            "successfull": False,
+            "msg": e
+        }
+    return Response(dumps(data), mimetype='json')
+
+
+@app.route('/check_text', methods=['POST'])
+def check_text():
+    try:
+        req = request.json
+        text = req['text']
+        data = {
+            "successfull": True,
+            "vipham": check_keyword([text], keywords)
+        }
+    except Exception as e:
+        data = {
+            "successfull": True,
+            "msg": e
+        }
+    return Response(dumps(data), mimetype='json')
 
 
 if __name__ == '__main__':
-
-    driver = openchrome()
-
+    driver = openbrowser()
     app.run(HOST, PORT, DEBUG)
