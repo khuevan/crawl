@@ -1,16 +1,15 @@
 import os
 import time
 import urllib.request
-from datetime import datetime
 
 import html2text
 
 import markdown
 import validators
 from bs4 import BeautifulSoup
+import ssl
 
 from settings import CHROME_PATH
-
 from googlesearch import search
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -190,11 +189,11 @@ def saveimage(images: list, path):
     """
     os.makedirs(path, exist_ok=False)
     listimages = []
-    for image in images:
-        dt = datetime.now()
-        ts = datetime.timestamp(dt)
-        name = '/' + str(ts).replace(".", '') + '.' + image.split('.')[-1]
-        urllib.request.urlretrieve(image, name)
+    opener = urllib.request.URLopener()
+    opener.addheader('User-Agent', 'whatever')
+    for url in images:
+        name = '/{}.{}'.format(str(int(time.time()*1000)), url.split('.')[-1])
+        opener.retrieve(url, 'name')
         listimages.append(path + name)
     return listimages
 
