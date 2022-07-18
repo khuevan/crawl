@@ -8,6 +8,8 @@ import markdown
 import validators
 from bs4 import BeautifulSoup
 
+from settings import CHROME_PATH
+
 from googlesearch import search
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -16,7 +18,7 @@ import pymongo
 from settings import CHROME_PATH, MONGODB_CONNSTRING
 from keywords import keywords
 
-client = pymongo.MongoClient(MONGODB_CONNSTRING)
+client = pymongo.MongoClient("mongodb://localhost:27017")
 db = client['crawlbykeyword']
 brands_collection = db['brands']
 intents_collection = db['intents']
@@ -60,12 +62,14 @@ def openbrowser():
     return driver
 
 
+
 def openchrome():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    # driver = webdriver.Chrome(executable_path=CHROME_PATH, chrome_options=chrome_options)
+
+    driver = webdriver.Chrome(executable_path=CHROME_PATH, chrome_options=chrome_options)
     driver = webdriver.Chrome(chrome_options=chrome_options)
     return driver
 
