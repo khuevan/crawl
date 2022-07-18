@@ -145,3 +145,30 @@ API có dạng:
   },
 ]
 ```
+**POST**
+
+```json
+{
+  "type": "url",
+  "data": ""
+}
+```
+
+```jsx
+var settings = {
+  "url": "http://127.0.0.1:5003/check",
+  "method": "POST",
+  "timeout": 0,
+"data": "{\r\n    \"type\":\"url\",\r\n    \"data\":\"\"\r\n}\r\n",};
+ 
+$.ajax(settings).done(function (response) {
+  console.log(response);
+});
+```
+
+```json
+{
+  "status": "success",
+  "vipham": true
+}
+```
