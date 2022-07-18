@@ -13,15 +13,11 @@ def welcome():
     return render_template('index.html')
 
 
-@app.route('/result', methods=['GET', 'POST'])
+@app.route('/result', methods=['POST'])
 def response():
-    if request.method == 'POST':
-        url = request.form['name']
-        data = get_data(driver, url)
-        return render_template('result.html', url=url, data=dumps(data))
-    else:
-        data = data_collection.find()
-        return dumps(data)
+    url = request.form['name']
+    data = get_data(driver=driver, url=url)
+    return render_template('result.html', url=url, data=dumps(data))
 
 
 @app.route('/check_url', methods=['POST'])
