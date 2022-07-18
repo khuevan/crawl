@@ -1,3 +1,4 @@
+import os
 import time
 import urllib.request
 from datetime import datetime
@@ -187,6 +188,7 @@ def saveimage(images: list, path):
     :param path: place to save
     :return: list path to images
     """
+    os.makedirs(path, exist_ok=False)
     listimages = []
     for image in images:
         dt = datetime.now()
