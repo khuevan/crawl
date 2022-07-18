@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, Response
 from keywords import keywords
 from settings import HOST, PORT, DEBUG
-from utils import get_data, data_collection, check_keyword, openbrowser
+from utils import get_data, check_keyword, openbrowser, openchrome
 
 from bson.json_util import dumps
 
@@ -59,5 +59,5 @@ def check_text():
 
 
 if __name__ == '__main__':
-    driver = openbrowser()
+    driver = openchrome()
     app.run(HOST, PORT, DEBUG)
