@@ -25,19 +25,20 @@ def check_url():
     try:
         req = request.json
         url = req['url']
-        texts = get_data(driver, url)
-        text = [txt['text'] for txt in texts['texts']]
-        data = {
+        data = get_data(driver, url)
+        text = [txt['text'] for txt in data['texts']]
+        json = {
             "successfully": True,
-            "vipham": check_keyword(text, keywords)
+            "vipham": check_keyword(text, keywords),
+            "images": data['images']
         }
     except Exception as e:
-        data = {
+        json = {
             "successfully": False,
-            "msg": str(e)
+            "msg": str(e),
+            "images": []
         }
-
-    return Response(dumps(data), mimetype='json')
+    return Response(dumps(json), mimetype='json')
 
 
 @app.route('/check_text', methods=['POST'])
@@ -45,17 +46,16 @@ def check_text():
     try:
         req = request.json
         text = req['text']
-        data = {
+        json = {
             "successfully": True,
             "vipham": check_keyword([text], keywords)
         }
     except Exception as e:
-        data = {
+        json = {
             "successfully": True,
             "msg": str(e)
         }
-
-    return Response(dumps(data), mimetype='json')
+    return Response(dumps(json), mimetype='json')
 
 
 if __name__ == '__main__':

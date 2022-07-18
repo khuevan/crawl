@@ -168,7 +168,10 @@ def get_data(driver, url):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
+        path = 'static/images'
+        images = saveimage(data['images'], path)
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
+        data.update({"images": images})
         data.update({"texts": text_checked})
         data_collection.insert_one(data)
         return data
@@ -188,7 +191,7 @@ def saveimage(images: list, path):
     for image in images:
         dt = datetime.now()
         ts = datetime.timestamp(dt)
-        name = '/' + str(ts) + image.split('.')[-1]
+        name = '/' + str(ts).replace(".", '') + '.' + image.split('.')[-1]
         urllib.request.urlretrieve(image, name)
         listimages.append(path + name)
     return listimages
