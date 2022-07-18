@@ -28,12 +28,12 @@ def check_url():
         texts = get_data(driver, url)
         text = [txt['text'] for txt in texts['texts']]
         data = {
-            "successfull": True,
+            "successfully": True,
             "vipham": check_keyword(text, keywords)
         }
     except Exception as e:
         data = {
-            "successfull": False,
+            "successfully": False,
             "msg": str(e)
         }
 
@@ -46,12 +46,12 @@ def check_text():
         req = request.json
         text = req['text']
         data = {
-            "successfull": True,
+            "successfully": True,
             "vipham": check_keyword([text], keywords)
         }
     except Exception as e:
         data = {
-            "successfull": True,
+            "successfully": True,
             "msg": str(e)
         }
 
