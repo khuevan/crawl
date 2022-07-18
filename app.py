@@ -22,8 +22,8 @@ def response():
 
 @app.route('/check_url', methods=['POST'])
 def check_url():
+    req = request.json
     try:
-        req = request.json
         url = req['url']
         texts = get_data(driver, url)
         text = [txt['text'] for txt in texts['texts']]
@@ -41,8 +41,8 @@ def check_url():
 
 @app.route('/check_text', methods=['POST'])
 def check_text():
+    req = request.json
     try:
-        req = request.json
         text = req['text']
         data = {
             "successfull": True,
