@@ -13,10 +13,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pymongo
 
-from settings import CHROME_PATH
+from settings import CHROME_PATH, MONGODB_CONNSTRING
 from keywords import keywords
 
-client = pymongo.MongoClient("mongodb://localhost:27017")
+client = pymongo.MongoClient(MONGODB_CONNSTRING)
 db = client['crawlbykeyword']
 brands_collection = db['brands']
 intents_collection = db['intents']
@@ -65,7 +65,8 @@ def openchrome():
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Chrome(executable_path=CHROME_PATH, chrome_options=chrome_options)
+    # driver = webdriver.Chrome(executable_path=CHROME_PATH, chrome_options=chrome_options)
+    driver = webdriver.Chrome(chrome_options=chrome_options)
     return driver
 
 
@@ -138,34 +139,33 @@ def crawl_data(driver, url):
         return data
 
 
-def check_keyword(text, keyword: list):
+def check_keyword(texts: list, keyword: list):
     """
     Check if text contain keyword
 
+    :param texts:
     :param keyword: A list of keyword [ [key1, key3], [key2, key3] ]
-    :param text: A sentence
     :return: True False
     """
     keys = []
-    for item in keyword:
-        a = [key for key in item if key.lower() in text.lower()]
-        if a == item:
-            keys.append(a)
+    for text in texts:
+        for txt in text.split('.'):
+            for item in keyword:
+                a = [key for key in item if key.lower() in txt.lower()]
+                if a == item:
+                    keys.append(a)
     if not keys:
         return False
     else:
         return True
 
     
-def get_data(url, driver):
+def get_data(driver, url):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
-        path = 'static/image'
-        images = [image for image in saveimage(data['images'], path)]
-        text_checked = [{'text': text, 'vipham': check_keyword(text, keywords)}for text in data['texts']]
+        text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
         data.update({"texts": text_checked})
-        data.update({"images": images})
         data_collection.insert_one(data)
         return data
     else:
