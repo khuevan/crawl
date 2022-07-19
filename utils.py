@@ -176,9 +176,8 @@ def get_data(driver, url):
     if data is None:
         data = crawl_data(driver, url)
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            images = executor.map(download, (data['images']))
+            images = executor.map(download, data['images'])
         imgs = [DOMAIN + '/' + str(im) for im in list(images) if im is not None]
-        # images = [DOMAIN + '/' + create_thread(img, pathimage) for img in data['images']]
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
         data.update({"images": imgs})
         data.update({"texts": text_checked})
@@ -229,7 +228,7 @@ def download(url, pathname='static/images/'):
     except:
         pass
     try:
-        if not filter_size(filename):
+        if filter_size(filename):
             return filename
     except:
         pass
@@ -241,11 +240,11 @@ def filter_size(pathimage):
             w, h = im.size
         if h < int(HEIGHT) and w < int(WIDTH):
             os.remove(pathimage)
-            return True
+            return False
     except:
         os.remove(pathimage)
-        return True
-    return False
+        return False
+    return True
 
 
 # if __name__ == '__main__':
