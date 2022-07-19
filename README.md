@@ -112,7 +112,7 @@ def get_data(url):
 
 API có dạng:
 
-```python
+```JSON
 [
   {
     "_id": {

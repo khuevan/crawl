@@ -183,7 +183,6 @@ def get_data(driver, url):
 
 
 class TLSAdapter(adapters.HTTPAdapter):
-
     def init_poolmanager(self, connections, maxsize, block=False):
         """Create and initialize the urllib3 PoolManager."""
         ctx = ssl.create_default_context()
