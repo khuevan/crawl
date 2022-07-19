@@ -59,5 +59,5 @@ def check_text():
 
 
 if __name__ == '__main__':
-    driver = openchrome()
+    driver = openbrowser()
     app.run(HOST, PORT, DEBUG)

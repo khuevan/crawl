@@ -36,8 +36,8 @@
 <main class="container" style="background: #fffff9">
     <h2 id="url"></h2>
     <div id="texts"></div>
-    <!--<h2>Images:</h2>-->
-    <!--<div class="row" id="target"></div>-->
+    <h2>Images:</h2>
+    <div class="row" id="target"></div>
 </main>
 <script>
 
@@ -46,12 +46,12 @@ console.log(data)
 document.getElementById("url").textContent = String(data.url);
 
 if (data != ''){
-<!--    data.images.forEach( function(obj) {-->
-<!--        var img = new Image();-->
-<!--        img.src = String(obj);-->
-<!--        img.setAttribute("width", "250px");-->
-<!--        document.getElementById("target").appendChild(img);-->
-<!--    });-->
+    data.images.forEach( function(obj) {
+        var img = new Image();
+        img.src = String(obj);
+        img.setAttribute("width", "250px");
+        document.getElementById("target").appendChild(img);
+    });
     data.texts.forEach( function(obj) {
         var td1 = document.createElement("p");
         var node1 = document.createTextNode(String(obj.text));

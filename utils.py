@@ -1,13 +1,16 @@
 import os
 import time
-import urllib.request
 
 import html2text
+from requests import adapters
 
 import markdown
+import requests
 import validators
 from bs4 import BeautifulSoup
 import ssl
+
+from urllib3 import poolmanager
 
 from settings import CHROME_PATH
 from googlesearch import search
@@ -168,8 +171,8 @@ def get_data(driver, url):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
-        path = 'static/images'
-        images = saveimage(data['images'], path)
+        path = 'static/images/'
+        images = download(data['images'], path)
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
         data.update({"images": images})
         data.update({"texts": text_checked})
@@ -179,23 +182,53 @@ def get_data(driver, url):
         return data
 
 
-def saveimage(images: list, path):
-    """
-    Save image file with TimeStamp as file name
+class TLSAdapter(adapters.HTTPAdapter):
 
-    :param images: list url f image
-    :param path: place to save
-    :return: list path to images
+    def init_poolmanager(self, connections, maxsize, block=False):
+        """Create and initialize the urllib3 PoolManager."""
+        ctx = ssl.create_default_context()
+        ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+        self.poolmanager = poolmanager.PoolManager(
+                num_pools=connections,
+                maxsize=maxsize,
+                block=block,
+                ssl_version=ssl.PROTOCOL_TLS,
+                ssl_context=ctx)
+
+
+def download(urls, pathname):
     """
-    os.makedirs(path, exist_ok=False)
-    listimages = []
-    opener = urllib.request.URLopener()
-    opener.addheader('User-Agent', 'whatever')
-    for url in images:
-        name = '/{}.{}'.format(str(int(time.time()*1000)), url.split('.')[-1])
-        opener.retrieve(url, 'name')
-        listimages.append(path + name)
-    return listimages
+    Downloads a file given an URL and puts it in the folder `pathname`
+    """
+    listpath = []
+    # if path doesn't exist, make that path dir
+    if not os.path.isdir(pathname):
+        try:
+            os.makedirs(pathname)
+        except:
+            pass
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+    session = requests.session()
+    session.mount('https://', TLSAdapter())
+
+    for url in urls:
+        try:
+            response = session.get(url, headers=headers)
+        except:
+            response = requests.get(url, headers=headers, verify =False)
+
+        # get the file name
+        filename = os.path.join(pathname, str(int(time.time())*1000)+'.jpg')
+        filename = filename.replace('%','')
+        try:
+            with open(filename, "wb") as f:
+                f.write(response.content)
+            listpath.append(filename)
+        except:
+            pass
+
+    return listpath
+
 
 
 # if __name__ == '__main__':
@@ -203,4 +236,3 @@ def saveimage(images: list, path):
 #     for data in url_collection.find():
 #         for url in data['urls']:
 #             get_data(url)
-
