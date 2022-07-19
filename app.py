@@ -60,4 +60,4 @@ def check_text():
 
 if __name__ == '__main__':
     driver = openchrome()
-    app.run(HOST, PORT, DEBUG)
+    app.run(HOST, PORT, debug=DEBUG)

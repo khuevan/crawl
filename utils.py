@@ -12,7 +12,6 @@ import ssl
 
 from urllib3 import poolmanager
 
-from settings import CHROME_PATH
 from googlesearch import search
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -171,7 +170,7 @@ def get_data(driver, url):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
-        path = 'static/images/'
+        path = 'static/'
         images = [download(img, path) for img in data['images']]
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
         data.update({"images": images})
