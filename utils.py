@@ -172,7 +172,7 @@ def get_data(driver, url):
     if data is None:
         data = crawl_data(driver, url)
         path = 'static/images/'
-        images = download(data['images'], path)
+        images = [download(img, path) for img in data['images']]
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
         data.update({"images": images})
         data.update({"texts": text_checked})
@@ -196,11 +196,10 @@ class TLSAdapter(adapters.HTTPAdapter):
                 ssl_context=ctx)
 
 
-def download(urls, pathname):
+def download(url, pathname):
     """
     Downloads a file given an URL and puts it in the folder `pathname`
     """
-    listpath = []
     # if path doesn't exist, make that path dir
     if not os.path.isdir(pathname):
         try:
@@ -211,23 +210,21 @@ def download(urls, pathname):
     session = requests.session()
     session.mount('https://', TLSAdapter())
 
-    for url in urls:
-        try:
-            response = session.get(url, headers=headers)
-        except:
-            response = requests.get(url, headers=headers, verify =False)
+    try:
+        response = session.get(url, headers=headers)
+    except:
+        response = requests.get(url, headers=headers, verify =False)
 
-        # get the file name
-        filename = os.path.join(pathname, str(int(time.time())*1000)+'.jpg')
-        filename = filename.replace('%','')
-        try:
-            with open(filename, "wb") as f:
-                f.write(response.content)
-            listpath.append(filename)
-        except:
-            pass
+    # get the file name
+    filename = os.path.join(pathname, str(int(time.time()*1000))+'.jpg')
+    filename = filename.replace('%','')
+    try:
+        with open(filename, "wb") as f:
+            f.write(response.content)
+    except:
+        pass
 
-    return listpath
+    return filename
 
 
 
