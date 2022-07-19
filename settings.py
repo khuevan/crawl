@@ -10,5 +10,6 @@ PORT = os.getenv("PORT", 8000)
 DEBUG = os.getenv("DEBUG", "False") == "True"
 CHROME_PATH = os.environ.get("CHROME_PATH")
 DOMAIN = os.environ.get("DOMAIN")
-HEIGHT = os.getenv("HEIGHT", 600)
-WIDTH = os.getenv("WIDTH", 600)
+HEIGHT = int(os.getenv("HEIGHT", 600))
+WIDTH = int(os.getenv("WIDTH", 600))
+

@@ -1,5 +1,9 @@
 import os
+import threading
 import time
+from queue import Queue
+import concurrent.futures
+
 from PIL import Image
 import html2text
 from requests import adapters
@@ -171,12 +175,12 @@ def get_data(driver, url):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
-        pathimage = 'static/images/'
-        [download(img, pathimage) for img in data['images']]
-        dir_list = os.listdir(pathimage)
-        images = [DOMAIN + '/' + pathimage + path for path in dir_list]
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            images = executor.map(download, (data['images']))
+        imgs = [DOMAIN + '/' + str(im) for im in list(images) if im is not None]
+        # images = [DOMAIN + '/' + create_thread(img, pathimage) for img in data['images']]
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
-        data.update({"images": images})
+        data.update({"images": imgs})
         data.update({"texts": text_checked})
         data_collection.insert_one(data)
         return data
@@ -197,7 +201,7 @@ class TLSAdapter(adapters.HTTPAdapter):
                 ssl_context=ctx)
 
 
-def download(url, pathname):
+def download(url, pathname='static/images/'):
     """
     Downloads a file given an URL and puts it in the folder `pathname`
     """
@@ -216,7 +220,7 @@ def download(url, pathname):
     except:
         pass
     # get the file name
-    filename = os.path.join(pathname, str(int(time.time()*1000))+'.'+ url.split('.')[-1])
+    filename = os.path.join(pathname, str(int(time.time()*1000))+'.' + url.split('.')[-1])
     filename = filename.replace('%', '')
     try:
         with open(filename, "wb") as f:
@@ -224,11 +228,10 @@ def download(url, pathname):
     except:
         pass
     try:
-        filter_size(filename)
+        if not filter_size(filename):
+            return filename
     except:
         pass
-
-    return filename
 
 
 def filter_size(pathimage):
@@ -237,8 +240,12 @@ def filter_size(pathimage):
             w, h = im.size
         if not h >= int(HEIGHT) or not w >= int(WIDTH):
             os.remove(pathimage)
+            return True
     except:
         os.remove(pathimage)
+        return True
+    return False
+
 
 # if __name__ == '__main__':
 #     searchurls()
