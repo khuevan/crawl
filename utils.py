@@ -171,10 +171,10 @@ def get_data(driver, url):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
-        path = 'static/images/'
-        [download(img, path) for img in data['images']]
-        dir_list = os.listdir(path)
-        images = [DOMAIN + '/' + path for path in dir_list]
+        pathimage = 'static/images/'
+        [download(img, pathimage) for img in data['images']]
+        dir_list = os.listdir(pathimage)
+        images = [DOMAIN + '/' + pathimage + path for path in dir_list]
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
         data.update({"images": images})
         data.update({"texts": text_checked})
