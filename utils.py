@@ -226,7 +226,6 @@ def download(url, pathname):
     return filename
 
 
-
 # if __name__ == '__main__':
 #     searchurls()
 #     for data in url_collection.find():

@@ -110,8 +110,6 @@ def get_data(url):
 
 ### API
 
-API có dạng:
-
 ```JSON
 [
   {
