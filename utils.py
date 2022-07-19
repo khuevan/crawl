@@ -216,11 +216,12 @@ def download(url, pathname='static/images/'):
     session.mount('https://', TLSAdapter())
 
     try:
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers)
     except:
-        pass
+        response = requests.get(url, headers=headers, verify=False)
+
     # get the file name
-    filename = os.path.join(pathname, str(int(time.time()*1000))+'.' + url.split('.')[-1])
+    filename = os.path.join(pathname, str(int(time.time()*1000))+'.jpg')
     filename = filename.replace('%', '')
     try:
         with open(filename, "wb") as f:
@@ -238,7 +239,7 @@ def filter_size(pathimage):
     try:
         with Image.open(pathimage) as im:
             w, h = im.size
-        if not h >= int(HEIGHT) or not w >= int(WIDTH):
+        if h < int(HEIGHT) and w < int(WIDTH):
             os.remove(pathimage)
             return True
     except:
