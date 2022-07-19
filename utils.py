@@ -1,6 +1,6 @@
 import os
 import time
-
+from PIL import Image
 import html2text
 from requests import adapters
 
@@ -17,7 +17,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pymongo
 
-from settings import CHROME_PATH
+from settings import CHROME_PATH, HEIGHT, WIDTH, DOMAIN
 from keywords import keywords
 
 client = pymongo.MongoClient("mongodb://localhost:27017")
@@ -89,7 +89,8 @@ def get_image(images, backgoundimg=None):
         try:
             if image.get_attribute('src') is not None:
                 src = image.get_attribute('src')
-                imgs.append(src)
+                if validators.url(src):
+                    imgs.append(src)
         except:pass
     return imgs
 
@@ -170,8 +171,10 @@ def get_data(driver, url):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
-        path = 'static/'
-        images = [download(img, path) for img in data['images']]
+        path = 'static/images/'
+        [download(img, path) for img in data['images']]
+        dir_list = os.listdir(path)
+        images = [DOMAIN + '/' + path for path in dir_list]
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
         data.update({"images": images})
         data.update({"texts": text_checked})
@@ -209,21 +212,33 @@ def download(url, pathname):
     session.mount('https://', TLSAdapter())
 
     try:
-        response = session.get(url, headers=headers)
+        response = requests.get(url, headers=headers, verify=False)
     except:
-        response = requests.get(url, headers=headers, verify =False)
-
+        pass
     # get the file name
-    filename = os.path.join(pathname, str(int(time.time()*1000))+'.jpg')
-    filename = filename.replace('%','')
+    filename = os.path.join(pathname, str(int(time.time()*1000))+'.'+ url.split('.')[-1])
+    filename = filename.replace('%', '')
     try:
         with open(filename, "wb") as f:
             f.write(response.content)
     except:
         pass
+    try:
+        filter_size(filename)
+    except:
+        pass
 
     return filename
 
+
+def filter_size(pathimage):
+    try:
+        with Image.open(pathimage) as im:
+            w, h = im.size
+        if not h >= int(HEIGHT) or not w >= int(WIDTH):
+            os.remove(pathimage)
+    except:
+        os.remove(pathimage)
 
 # if __name__ == '__main__':
 #     searchurls()
