@@ -1,12 +1,16 @@
+from time import perf_counter
+
 from flask import Flask, request, render_template, Response
 from keywords import keywords
 from settings import HOST, PORT, DEBUG
 from utils import get_data, check_keyword, openbrowser, openchrome
+from flask_cors import CORS
 
 from bson.json_util import dumps
 
 app = Flask(__name__)
-
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+app.secret_key = b'_5#y2Lasdasd"F4Q8z\n\xec]/'
 
 @app.route('/')
 def welcome():
@@ -20,40 +24,38 @@ def response():
     return render_template('result.html', url=url, data=dumps(data))
 
 
-@app.route('/check_url', methods=['POST'])
+@app.route('/api/check_url', methods=['POST'])
 def check_url():
     try:
-        req = request.json
-        url = req['url']
+        url = request.values.get('Url')
         data = get_data(driver, url)
         text = [txt['text'] for txt in data['texts']]
         json = {
-            "successfully": True,
-            "vipham": check_keyword(text, keywords),
-            "images": data['images']
+            "Successfully": True,
+            "Is violation": check_keyword(text, keywords),
+            "Images": data['images']
         }
     except Exception as e:
         json = {
-            "successfully": False,
-            "msg": str(e),
-            "images": []
+            "Successfully": False,
+            "Exception": str(e),
+            "Images": []
         }
     return Response(dumps(json), mimetype='json')
 
 
-@app.route('/check_text', methods=['POST'])
+@app.route('/api/check_text', methods=['POST'])
 def check_text():
     try:
-        req = request.json
-        text = req['text']
+        text = request.values.get('Text')
         json = {
-            "successfully": True,
-            "vipham": check_keyword([text], keywords)
+            "Successfully": True,
+            "Is violation": check_keyword([text], keywords)
         }
     except Exception as e:
         json = {
-            "successfully": True,
-            "msg": str(e)
+            "Successfully": False,
+            "Exception": str(e)
         }
     return Response(dumps(json), mimetype='json')
 

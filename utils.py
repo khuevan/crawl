@@ -1,7 +1,5 @@
 import os
-import threading
 import time
-from queue import Queue
 import concurrent.futures
 
 from PIL import Image
@@ -68,7 +66,6 @@ def openbrowser():
     return driver
 
 
-
 def openchrome():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
@@ -76,7 +73,6 @@ def openchrome():
     chrome_options.add_argument('--disable-dev-shm-usage')
 
     driver = webdriver.Chrome(executable_path=CHROME_PATH, chrome_options=chrome_options)
-    driver = webdriver.Chrome(chrome_options=chrome_options)
     return driver
 
 
