@@ -1,18 +1,18 @@
-﻿brands = ['Vinataba', 'Phillip Morris', 'British America Tobacco', 'Tổng công ty thuốc lá Việt Nam',
-          'Thuốc lá Thăng Long', 'Thuốc lá Sài Gòn', "Phillip Morris International", 'PMI', 'Phillip Morris Việt Nam',
-          'BAT']
+﻿brands = [['Vinataba', 'Tổng công ty thuốc lá Việt Nam'],
+          ['British America Tobacco', 'BAT'],
+          ["Phillip Morris International", 'PMI', 'Phillip Morris Việt Nam', 'Phillip Morris'],
+          ['Thuốc lá Sài Gòn'],
+          ['Thuốc lá Thăng Long']]
 
 intents = ['ủng hộ', 'tài trợ', 'xây dựng', 'hỗ trợ']
 
 keywords = [
     {
-        'keyword':
-            [[brand, intent] for intent in intents]
-        ,
-        'brand': brand,
-        'type': 'vi pham..'
+        'keyword': [[b, intent] for b in brand for intent in intents],
+        'brand': brand[0],
+        'type': 'vi pham_1'
     } for brand in brands]
 
-type = []
+type_1 = []
 
 # keywords = [[brand, intent] for brand in brands for intent in intents]
