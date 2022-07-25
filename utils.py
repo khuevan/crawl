@@ -135,9 +135,12 @@ def crawl_data(driver, url):
         except:
             texts = []
 
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            imgs = executor.map(download, imgs)
+
         data = {
                 "url": url,
-                "images": imgs,
+                "images": list(imgs),
                 "texts": texts
             }
 
@@ -169,9 +172,7 @@ def get_data(driver, url):
     data = data_collection.find_one({'url': url})
     if data is None:
         data = crawl_data(driver, url)
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            images = executor.map(download, data['images'])
-        imgs = [DOMAIN + '/' + str(im) for im in list(images) if im is not None]
+        imgs = [DOMAIN + '/' + str(im) for im in data['images'] if im is not None]
         text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
         data.update({"images": imgs})
         data.update({"texts": text_checked})
