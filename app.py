@@ -34,7 +34,7 @@ def check_url():
         json = {
             "Successfully": True,
             "Is violation": violation,
-            "Brand": list(brand),
+            "Brand": brand,
             "Text": ' '.join(map(str, text)),
             "Images": data['images']
         }
