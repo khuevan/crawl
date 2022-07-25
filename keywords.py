@@ -4,15 +4,15 @@
 
 intents = ['ủng hộ', 'tài trợ', 'xây dựng', 'hỗ trợ']
 
-# keywords = [
-#     {
-#         'keyword':
-#             [[brand, intent] for intent in intents]
-#         ,
-#         'brand': brand,
-#         'type': 'vi pham'
-#     } for brand in brands]
+keywords = [
+    {
+        'keyword':
+            [[brand, intent] for intent in intents]
+        ,
+        'brand': brand,
+        'type': 'vi pham..'
+    } for brand in brands]
 
 type = []
 
-keywords = [[brand, intent] for brand in brands for intent in intents]
+# keywords = [[brand, intent] for brand in brands for intent in intents]

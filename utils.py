@@ -147,25 +147,28 @@ def crawl_data(driver, url):
         return data
 
 
-def check_keyword(texts: list, keyword: list):
+def check_keyword(texts: list, keyword):
     """
     Check if text contain keyword
 
     :param texts:
-    :param keyword: A list of keyword [ [key1, key3], [key2, key3] ]
+    :param keyword: A list of keyword
     :return: True False
     """
     keys = []
+    brand = []
     for text in texts:
         for txt in text.split('.'):
             for item in keyword:
-                a = [key for key in item if key.lower() in txt.lower()]
-                if a == item:
-                    keys.append(a)
+                for key in item['keyword']:
+                    a = [x for x in key if x.lower() in txt.lower()]
+                    if a == key:
+                        keys.append(a)
+                        brand.append(item['brand'])
     if not keys:
-        return False
+        return False, set(brand)
     else:
-        return True
+        return True, set(brand)
 
     
 def get_data(driver, url):
@@ -173,7 +176,10 @@ def get_data(driver, url):
     if data is None:
         data = crawl_data(driver, url)
         imgs = [DOMAIN + '/' + str(im) for im in data['images'] if im is not None]
-        text_checked = [{'text': text, 'vipham': check_keyword([text], keywords)}for text in data['texts']]
+        text_checked = []
+        for text in data['texts']:
+            violation, brand = check_keyword([text], keywords)
+            text_checked.append({'text': text, 'vipham': violation})
         data.update({"images": imgs})
         data.update({"texts": text_checked})
         data_collection.insert_one(data)

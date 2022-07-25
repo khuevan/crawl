@@ -30,10 +30,12 @@ def check_url():
         url = request.values.get('Url')
         data = get_data(driver, url)
         text = [txt['text'] for txt in data['texts']]
+        violation, brand = check_keyword(text, keywords)
         json = {
             "Successfully": True,
-            "Is violation": check_keyword(text, keywords),
-            "Text": ''.join(map(str, text)),
+            "Is violation": violation,
+            "Brand": list(brand),
+            "Text": ' '.join(map(str, text)),
             "Images": data['images']
         }
     except Exception as e:
@@ -49,9 +51,11 @@ def check_url():
 def check_text():
     try:
         text = request.values.get('Text')
+        violation, brand = check_keyword([text], keywords)
         json = {
             "Successfully": True,
-            "Is violation": check_keyword([text], keywords)
+            "Is violation": violation,
+            "Brand": brand
         }
     except Exception as e:
         json = {
