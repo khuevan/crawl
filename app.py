@@ -33,6 +33,7 @@ def check_url():
         json = {
             "Successfully": True,
             "Is violation": check_keyword(text, keywords),
+            "Text": ''.join(map(str, text)),
             "Images": data['images']
         }
     except Exception as e:
@@ -61,5 +62,5 @@ def check_text():
 
 
 if __name__ == '__main__':
-    driver = openchrome()
+    driver = openbrowser()
     app.run(HOST, PORT, debug=DEBUG)
