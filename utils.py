@@ -87,8 +87,9 @@ def get_image(images, backgoundimg=None):
         except:pass
     for image in images or []:
         try:
-            if image.get_attribute('src') is not None:
-                src = image.get_attribute('src')
+            img_url = image.get_attribute("srcset") or image.get_attribute("src") or image.get_attribute("data-src") or image.get_attribute("data-original")
+            if img_url is not None:
+                src = img_url
                 if validators.url(src):
                     imgs.append(src)
         except:pass
@@ -239,7 +240,7 @@ def filter_size(pathimage):
     try:
         with Image.open(pathimage) as im:
             w, h = im.size
-        if h < int(HEIGHT) and w < int(WIDTH):
+        if h < int(400) and w < int(400):
             os.remove(pathimage)
             return False
     except:
