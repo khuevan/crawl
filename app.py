@@ -20,15 +20,19 @@ def welcome():
 @app.route('/result', methods=['POST'])
 def response():
     url = request.form['name']
+    driver = openbrowser()
     data = get_data(driver=driver, url=url)
+    driver.close()
     return render_template('result.html', url=url, data=dumps(data))
 
 
 @app.route('/api/check_url', methods=['POST'])
 def check_url():
     try:
+        driver = openbrowser()
         url = request.values.get('Url')
         data = get_data(driver, url)
+        driver.close()
         text = [txt['text'] for txt in data['texts']]
         violation, brand = check_keyword(text, keywords)
         json = {
@@ -66,5 +70,4 @@ def check_text():
 
 
 if __name__ == '__main__':
-    driver = openbrowser()
     app.run(HOST, PORT, debug=DEBUG)
