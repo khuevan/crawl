@@ -240,7 +240,7 @@ def filter_size(pathimage):
     try:
         with Image.open(pathimage) as im:
             w, h = im.size
-        if h < int(400) and w < int(400):
+        if h < int(HEIGHT) and w < int(WIDTH):
             os.remove(pathimage)
             return False
     except:
