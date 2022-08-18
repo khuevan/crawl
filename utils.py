@@ -123,6 +123,7 @@ def crawl_data(driver, url):
     """
     if validators.url(url):
         driver.get(url)
+        time.sleep(2)
         images = driver.find_elements(By.TAG_NAME, 'img')
         div = driver.find_elements(By.TAG_NAME, 'div')
         html = driver.page_source
