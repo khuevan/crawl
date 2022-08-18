@@ -1,6 +1,6 @@
 ﻿brands = [['Vinataba', 'Tổng công ty thuốc lá Việt Nam'],
           ['British American Tobacco', 'BAT'],
-          ["Philip Morris International", 'PMI', 'Philip Morris Việt Nam', 'Philip Morris'],
+          ["Philip Morris International", 'PMI', 'Philip Morris Việt Nam', 'Philip Morris', "Phillip Morris International", 'Phillip Morris Việt Nam', 'Phillip Morris'],
           ['Thuốc lá Sài Gòn'],
           ['Thuốc lá Thăng Long']]
 
