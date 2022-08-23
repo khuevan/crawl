@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import concurrent.futures
@@ -20,40 +21,22 @@ from selenium.webdriver.common.by import By
 import pymongo
 
 from settings import CHROME_PATH, HEIGHT, WIDTH, DOMAIN
-from keywords import keywords
+from keywords import keywords, brands, intents
 
 client = pymongo.MongoClient("mongodb://localhost:27017")
 db = client['crawlbykeyword']
-brands_collection = db['brands']
-intents_collection = db['intents']
 data_collection = db['data']
-url_collection = db['urls']
-key_collection = db['keywords']
-
-
-def get_keyword():
-    listkey = []
-    for brand in brands_collection.find():
-        for key in key_collection.find():
-            for k in key['keyword']:
-                listkey.append([k, brand['brand']])
-    return listkey
 
 
 def searchurls():
-    for brand in brands_collection.find():
-        for intent in intents_collection.find():
-            liststrurl = []
-            listurl = search(f'{brand["brand"]} {intent["intent"]}', num_results=5, lang='vi')
+    urls = []
+    for brand in brands:
+        for intent in intents:
+            listurl = search(f'{brand} {intent}', num_results=5, lang='vi')
             time.sleep(5)
             for item in listurl:
-                liststrurl.append(item)
-
-            url_collection.insert_one({
-                "brand": brand['brand'],
-                "intent": intent['intent'],
-                "urls": liststrurl
-            })
+                urls.append(item)
+    return urls
 
 
 def openbrowser():
@@ -250,8 +233,33 @@ def filter_size(pathimage):
     return True
 
 
-# if __name__ == '__main__':
-#     searchurls()
-#     for data in url_collection.find():
-#         for url in data['urls']:
-#             get_data(url)
+def add_to_database(content, brand, image, status, link, method="0"):
+    url = "https://tobacco.corporateaccountabilitytool.org/action-managements/adddatabase"
+    payload = json.dumps({
+        "content": content,
+        "brand": brand,
+        "image": image,
+        "method": method,
+        "status": status,
+        "link": link
+    })
+    headers = {'Content-Type': 'application/json'}
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return response
+
+
+def crawl_to_database(link):
+    data = get_data(driver, link)
+    text = [txt['text'] for txt in data['texts']]
+    is_violation, brand = check_keyword(text, keywords)
+    content = ' '.join(map(str, text))
+    image = data['images']
+    add_to_database(content, list(brand), image, "0" if is_violation is False else "2", link)
+
+
+if __name__ == '__main__':
+    driver = openbrowser()
+    urls = searchurls()
+    for url in urls:
+        crawl_to_database(url)
+    driver.close()
