@@ -59,7 +59,7 @@ def openchrome():
     return driver
 
 
-def get_image(images, backgoundimg=None):
+def get_image(images, url, backgoundimg=None):
     imgs = []
     for el in backgoundimg or []:
         try:
@@ -70,11 +70,15 @@ def get_image(images, backgoundimg=None):
         except:pass
     for image in images or []:
         try:
-            img_url = image.get_attribute("srcset") or image.get_attribute("src") or image.get_attribute("data-src") or image.get_attribute("data-original")
+            img_url = image.get_attribute("srcset") or image.get_attribute("data-src") or image.get_attribute("src") or image.get_attribute("data-original")
             if img_url is not None:
                 src = img_url
+                print(src)
                 if validators.url(src):
                     imgs.append(src)
+                elif '/' in scr:
+                    src = requests.compat.urljoin(url, src)
+
         except:pass
     return imgs
 
@@ -112,14 +116,13 @@ def crawl_data(driver, url):
         html = driver.page_source
 
         try:
-            imgs = get_image(images, div)
+            imgs = get_image(images, url, div)
         except:
             imgs = []
         try:
             texts = gettexthtml(html)
         except:
             texts = []
-
         with concurrent.futures.ThreadPoolExecutor() as executor:
             imgs = executor.map(download, imgs)
 
@@ -232,34 +235,3 @@ def filter_size(pathimage):
         return False
     return True
 
-
-def add_to_database(content, brand, image, status, link, method="0"):
-    url = "https://tobacco.corporateaccountabilitytool.org/action-managements/adddatabase"
-    payload = json.dumps({
-        "content": content,
-        "brand": brand,
-        "image": image,
-        "method": method,
-        "status": status,
-        "link": link
-    })
-    headers = {'Content-Type': 'application/json'}
-    response = requests.request("POST", url, headers=headers, data=payload)
-    return response
-
-
-def crawl_to_database(link):
-    data = get_data(driver, link)
-    text = [txt['text'] for txt in data['texts']]
-    is_violation, brand = check_keyword(text, keywords)
-    content = ' '.join(map(str, text))
-    image = data['images']
-    add_to_database(content, list(brand), image, "0" if is_violation is False else "2", link)
-
-
-if __name__ == '__main__':
-    driver = openbrowser()
-    urls = searchurls()
-    for url in urls:
-        crawl_to_database(url)
-    driver.close()
