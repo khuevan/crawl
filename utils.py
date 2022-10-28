@@ -73,12 +73,12 @@ def get_image(images, url, backgoundimg=None):
             img_url = image.get_attribute("srcset") or image.get_attribute("data-src") or image.get_attribute("src") or image.get_attribute("data-original")
             if img_url is not None:
                 src = img_url
-                print(src)
                 if validators.url(src):
                     imgs.append(src)
-                elif '/' in scr:
+                elif '/' in src:
                     src = requests.compat.urljoin(url, src)
-
+                    # print('a', src)
+                    imgs.append(src)
         except:pass
     return imgs
 
