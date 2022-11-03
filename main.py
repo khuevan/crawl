@@ -1,7 +1,11 @@
 ## test
-from utils import crawl_data, openbrowser
+from utils import crawl_data, openbrowser, openchrome, download
 
-driver = openbrowser()
-url = 'https://www.anmum.com/nz/products/assura-organic/assura-organic-1'
+driver = openchrome()
+# url = 'https://www.frisogold.com.my/'
+url = 'https://www.hipp.my/'
 
 data = crawl_data(driver, url)
+# img_url = 'https://www.hipp.my/fileadmin/_processed_/4/8/csm_teaser_promo_big_organic_39934e78af.png'
+
+# print(download(img_url))

@@ -59,7 +59,7 @@ def openchrome():
     return driver
 
 
-def get_image(images, url, backgoundimg=None):
+def get_image(images, url, backgoundimg=None, picture=None):
     imgs = []
     for el in backgoundimg or []:
         try:
@@ -70,16 +70,27 @@ def get_image(images, url, backgoundimg=None):
         except:pass
     for image in images or []:
         try:
-            img_url = image.get_attribute("srcset") or image.get_attribute("data-src") or image.get_attribute("src") or image.get_attribute("data-original")
+            img_url = image.get_attribute("src") or image.get_attribute("srcset") or image.get_attribute("data-src") or image.get_attribute("data-original")
             if img_url is not None:
                 src = img_url
                 if validators.url(src):
                     imgs.append(src)
-                elif '/' in src:
+                elif 'data:image/' not in src:
                     src = requests.compat.urljoin(url, src)
-                    # print('a', src)
                     imgs.append(src)
         except:pass
+    for pic in picture:
+        try:
+            source = pic.find_elements(By.TAG_NAME, 'source')[0]
+            img_url = image.get_attribute("src") or source.get_attribute("srcset") or image.get_attribute("data-src") or image.get_attribute("data-original")
+            if img_url is not None:
+                src = img_url
+                if validators.url(src):
+                    imgs.append(src)
+                elif 'data:image/' not in src:
+                    src = requests.compat.urljoin(url, src)
+                    imgs.append(src)
+        except: pass
     return imgs
 
 
@@ -112,11 +123,12 @@ def crawl_data(driver, url):
         driver.get(url)
         time.sleep(2)
         images = driver.find_elements(By.TAG_NAME, 'img')
+        picture = driver.find_elements(By.TAG_NAME, 'picture')
         div = driver.find_elements(By.TAG_NAME, 'div')
         html = driver.page_source
 
         try:
-            imgs = get_image(images, url, div)
+            imgs = get_image(images, url, div, picture)
         except:
             imgs = []
         try:
